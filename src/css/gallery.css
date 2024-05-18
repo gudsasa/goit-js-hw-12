@@ -43,7 +43,7 @@
 .gallery-item {
   border: 1px solid #808080;
 }
-.js-search-form {
+.json-form {
   display: flex;
   gap: 20px;
   justify-content: center;
@@ -52,27 +52,24 @@
   margin-bottom: 20px;
 }
 
-.js-search-form button {
+.json-form button {
   width: 91px;
 
   padding: 8px 16px;
   font-family: Montserrat;
   font-size: 16px;
   font-weight: 500;
-  line-height: 24px;
   letter-spacing: 0.04em;
-
-  text-align: left;
   cursor: pointer;
   background-color: #4e75ff;
   color: #fff;
   border: 1px solid rgba(0, 0, 0, 0);
   border-radius: 4px;
 }
-.js-search-form button:hover {
+.json-form button:hover {
   background-color: #6c8cff;
 }
-.js-search-input {
+.js-input {
   width: 272px;
   padding: 8px 16px;
   font-family: Montserrat;

@@ -15,7 +15,7 @@
     transform: translate(-50%, -50%);
   }
 
-  &.is-hidden {
+  &.js-hidden {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;

@@ -10,9 +10,9 @@ import { createImageGalleryItem } from './js/render-functions.js';
 import { PER_PAGE } from './js/pixabay-api.js';
 
 const galleryEl = document.querySelector('.js-gallery');
-const searchFormEl = document.querySelector('.js-search-form');
+const searchFormEl = document.querySelector('.json-form');
 const loaderEl = document.querySelector('.js-loader');
-const loadMoreBtn = document.querySelector('.btn-load-more');
+const loadMoreBtn = document.querySelector('.btn-loader');
 
 let searchQuery = null;
 let newsCurrentPage = 1;
@@ -39,7 +39,7 @@ async function onSearchFormSubmit(event) {
   }
 
   galleryEl.innerHTML = '';
-  loaderEl.classList.remove('is-hidden');
+  loaderEl.classList.remove('js-hidden');
 
   try {
     const { data } = await fetchPhotoByQuery(searchQuery, newsCurrentPage);
@@ -52,7 +52,7 @@ async function onSearchFormSubmit(event) {
         color: 'red',
       });
 
-      loaderEl.classList.add('is-hidden');
+      loaderEl.classList.add('js-hidden');
       event.target.reset();
       return;
     }
@@ -68,7 +68,7 @@ async function onSearchFormSubmit(event) {
 
     totalPages = Math.ceil(data.totalHits / PER_PAGE);
     if (totalPages > 1) {
-      loadMoreBtn.classList.remove('is-hidden');
+      loadMoreBtn.classList.remove('js-hidden');
     }
   } catch (error) {
     let message = '';
@@ -86,7 +86,7 @@ async function onSearchFormSubmit(event) {
   }
 
   event.target.reset();
-  loaderEl.classList.add('is-hidden');
+  loaderEl.classList.add('js-hidden');
 }
 
 const smoothScrollOnLoadMore = () => {
@@ -120,7 +120,7 @@ const onLoadMorePressed = async event => {
     smoothScrollOnLoadMore();
 
     if (newsCurrentPage > totalPages) {
-      loadMoreBtn.classList.add('is-hidden');
+      loadMoreBtn.classList.add('js-hidden');
       loadMoreBtn.removeEventListener('click', onLoadMorePressed);
       iziToast.error({
         message:
