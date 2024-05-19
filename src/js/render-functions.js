@@ -1,42 +1,41 @@
-export const createImageGalleryItem = images => {
-  return images
-    .map(
-      ({
-        webformatURL,
-        largeImageURL,
-        tags,
-        likes,
-        views,
-        downloads,
-        comments,
-      }) => `
-  
-  <div class="gallery-item">
-               <a class="gallery-link" href="${largeImageURL}">
-          <img
-            class="gallery-image"
-            src="${webformatURL}"
-            alt="${tags}"
-          />
-        </a>
-            <div class = "card-img">
-            <div class = "likes">
-            <h2 class = "card-title">Likes</h2>
-            <p class = image-text>${likes}</p></div>
-            
-            <div class = "views">
-            <h2 class = "card-title">Views</h2>
-            <p class = image-text>${views}</p></div>
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 
-            <div class = "comments">
-            <h2 class = "card-title">Comments</h2>
-            <p class = image-text>${comments}</p></div>
-            
-            <div class = "downloads">
-            <h2 class = "card-title">Downloads</h2>
-            <p class = image-text>${downloads}</p></div>
-            </div>
-          </div>`
-    )
-    .join('');
-};
+export function renderImages(images) {
+  const photoGallery = document.querySelector('.gallery');
+  photoGallery.innerHTML = '';
+
+    const cardMarkup = images.map(
+        ({
+            webformatURL,
+            largeImageURL,
+            tags,
+            likes,
+            views,
+            comments,
+            downloads,
+        }) =>
+            `<li class="gallery-item">
+            <a href = "${largeImageURL}">
+        <img src="${webformatURL}" alt="${tags}"/>
+    <ul class="gallery-info">
+        <li>Likes<p>${likes}</p></li>
+        <li>Views<p>${views}</p></li>
+        <li>Comments<p>${comments}</p></li>
+        <li>Downloads<p>${downloads}</p></li>
+    </ul>
+    </a>
+    </li>`
+        
+    ).join('');
+
+    photoGallery.insertAdjacentHTML('beforeend', cardMarkup);
+
+  const optionsGallery = {
+    captionsData: 'alt',
+    captionDelay: 250,
+  };
+
+  let gallery = new SimpleLightbox('.gallery a', optionsGallery);
+  gallery.refresh();
+}

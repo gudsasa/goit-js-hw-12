@@ -1,142 +1,91 @@
-import SimpleLightbox from 'simplelightbox';
-import 'simplelightbox/dist/simple-lightbox.min.css';
-
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
-import { fetchPhotoByQuery } from './js/pixabay-api.js';
-import { createImageGalleryItem } from './js/render-functions.js';
+import { pixabayAPI } from './js/pixabay-api';
+import { renderImages } from './js/render-functions';
 
-import { PER_PAGE } from './js/pixabay-api.js';
+const form = document.querySelector('.search-form');
+const searchInput = document.querySelector('.search-images');
+const loader = document.querySelector('.loader');
+const loadBtn = document.querySelector('.load-more-button');
 
-const galleryEl = document.querySelector('.js-gallery');
-const searchFormEl = document.querySelector('.json-form');
-const loaderEl = document.querySelector('.js-loader');
-const loadMoreBtn = document.querySelector('.btn-loader');
+export let page = 1;
+let searchTerm = '';
+let currentImages = [];
 
-let searchQuery = null;
-let newsCurrentPage = 1;
-let totalPages = 0;
-
-async function onSearchFormSubmit(event) {
+document.addEventListener('DOMContentLoaded', () => {
+  loadBtn.style.display = 'none';
+});
+form.addEventListener('submit', async function (event) {
   event.preventDefault();
-
-  const form = event.target;
-  searchQuery = form.elements.searchKeyword.value.trim();
-  galleryEl.innerHTML = '';
-
-  if (searchQuery === '') {
-    galleryEl.innerHTML = '';
-    event.target.reset();
-    iziToast.show({
-      message:
-        'Sorry, there are no images matching your search query. Please try again!',
+  const value = searchInput.value.trim();
+  if (value === '') {
+    iziToast.error({
+      message: 'Please enter a search term!',
       position: 'topRight',
-      timeout: 2000,
-      color: 'red',
     });
     return;
   }
 
-  galleryEl.innerHTML = '';
-  loaderEl.classList.remove('js-hidden');
+  loader.style.display = 'block';
+  page = 1;
 
   try {
-    const { data } = await fetchPhotoByQuery(searchQuery, newsCurrentPage);
-
-    if (data.total === 0) {
-      iziToast.show({
-        message: 'Search params is not valid',
-        position: 'topRight',
-        timeout: 2000,
-        color: 'red',
-      });
-
-      loaderEl.classList.add('js-hidden');
-      event.target.reset();
-      return;
-    }
-
-    const simpleLighbox = new SimpleLightbox('.gallery-list a', {
-      captionsData: 'alt',
-      captionDelay: 250,
-    });
-
-    galleryEl.innerHTML = createImageGalleryItem(data.hits);
-
-    simpleLighbox.refresh();
-
-    totalPages = Math.ceil(data.totalHits / PER_PAGE);
-    if (totalPages > 1) {
-      loadMoreBtn.classList.remove('js-hidden');
-    }
-  } catch (error) {
-    let message = '';
-    if (error.message === 'rateLimited') {
-      message = 'Too many requests';
-    } else {
-      message += 'Sorry, there are no images for this query';
-    }
-
-    iziToast.error({
-      message,
-      position: 'topRight',
-      timeout: 2000,
-    });
-  }
-
-  event.target.reset();
-  loaderEl.classList.add('js-hidden');
-}
-
-const smoothScrollOnLoadMore = () => {
-  const lastDiv = galleryEl.querySelector('.gallery-item');
-  const newsDivesHeight = lastDiv.getBoundingClientRect().height;
-  const scrollHeight = newsDivesHeight * 2;
-
-  window.scrollBy({
-    top: scrollHeight,
-    left: 0,
-    behavior: 'smooth',
-  });
-};
-
-const onLoadMorePressed = async event => {
-  try {
-    newsCurrentPage += 1;
-
-    const { data } = await fetchPhotoByQuery(searchQuery, newsCurrentPage);
-
-    const simpleLighbox = new SimpleLightbox('.gallery-list a', {
-      captionsData: 'alt',
-      captionDelay: 250,
-    });
-
-    galleryEl.insertAdjacentHTML(
-      'beforeend',
-      createImageGalleryItem(data.hits)
-    );
-    simpleLighbox.refresh();
-    smoothScrollOnLoadMore();
-
-    if (newsCurrentPage > totalPages) {
-      loadMoreBtn.classList.add('js-hidden');
-      loadMoreBtn.removeEventListener('click', onLoadMorePressed);
+    const data = await pixabayAPI(value, page);
+    if (data.hits.length === 0) {
+      renderImages([]);
+      loadBtn.style.display = 'none';
       iziToast.error({
+        title: 'Error!',
         message:
-          'We are sorry, but you have reached the end of search results.',
+          'Sorry, there are no images matching your search query. Please try again!',
         position: 'topRight',
-        timeout: 2000,
+      });
+    } else {
+      renderImages(data.hits);
+      loadBtn.style.display = 'block';
+      searchTerm = value;
+      currentImages = data.hits;
+      page = 1;
+    }
+  } catch (error) {
+    console.error('Error fetching images:', error);
+    iziToast.error({
+      title: 'Error!',
+      message:
+        'An error occurred while fetching images. Please try again later.',
+      position: 'topRight',
+    });
+  } finally {
+    loader.style.display = 'none';
+  }
+  searchInput.value = '';
+});
+
+loadBtn.addEventListener('click', async () => {
+  try {
+    loader.style.display = 'block';
+    const data = await pixabayAPI(searchTerm, ++page);
+    if (data.hits.length === 0) {
+      loadBtn.style.display = 'none';
+      iziToast.info({
+        message: "You've reached the end of search results.",
+        position: 'topRight',
+      });
+    } else {
+      currentImages = [...currentImages, ...data.hits];
+      renderImages(currentImages);
+      const firstImage = document.querySelector('.gallery a');
+
+      const cardHeight = firstImage.getBoundingClientRect().height;
+      window.scrollBy({
+        top: cardHeight * 2,
+        behavior: 'smooth',
       });
     }
   } catch (error) {
-    iziToast.error({
-      message: 'Search params is not valid',
-      position: 'topRight',
-      timeout: 2000,
-    });
+    console.log(error);
+  } finally {
+    loader.style.display = 'none';
   }
-};
-
-searchFormEl.addEventListener('submit', onSearchFormSubmit);
-loadMoreBtn.addEventListener('click', onLoadMorePressed);
+});
