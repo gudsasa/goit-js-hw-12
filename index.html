@@ -5,35 +5,37 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Homework 12</title>
-   
+    
+    
+    
     <script type="module" crossorigin src="/goit-js-hw-12/commonHelpers.js"></script>
-    <link rel="modulepreload" crossorigin href="/goit-js-hw-12/assets/vendor-eded45c0.js">
-    <link rel="stylesheet" href="/goit-js-hw-12/assets/vendor-4b066c51.css">
-    <link rel="stylesheet" href="/goit-js-hw-12/assets/index-b4cfaa73.css">
+    <link rel="modulepreload" crossorigin href="/goit-js-hw-12/assets/vendor-8c59ed88.js">
+    <link rel="stylesheet" href="/goit-js-hw-12/assets/vendor-1cd1f9d9.css">
+    <link rel="stylesheet" href="/goit-js-hw-12/assets/index-73587652.css">
   </head>
+
   <body>
-    <div class="container">
-      <form class="json-form" name="searchImageForm">
+    <form action="submit" class="search-form">
+      <div class="form-box">
+        <label for="images" class="label"></label>
         <input
-          class="form-imp js-input"
           type="text"
-          name="searchKeyword"
-          required
+          class="search-images"
+          name="images"
           placeholder="Search images..."
+          required
         />
-        <button class="btn" type="submit">Search</button>
-      </form>
-    </div>
-
-    <section class="gallery">
-      <div class="container js-container">
-        <div class="gallery-list js-gallery"></div>
-        <span class="loader js-loader js-hidden"></span>
       </div>
-    </section>
+      <button class="search-button" type="submit">Search</button>
+    </form>
+    <span class="loader"></span>
 
-    <button class="btn-loader js-hidden" type="submit">Load more</button>
+    <div class="gallery"></div>
+    <button class="load-more-button" type="button">Load more</button>
+
     
     
+    
+    <script src="iziToast.min.js" type="javascript"></script>
   </body>
 </html>
