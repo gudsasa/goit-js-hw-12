@@ -1,41 +1,32 @@
-import SimpleLightbox from "simplelightbox";
-import "simplelightbox/dist/simple-lightbox.min.css";
-
-export function renderImages(images) {
-  const photoGallery = document.querySelector('.gallery');
-  photoGallery.innerHTML = '';
-
-    const cardMarkup = images.map(
-        ({
-            webformatURL,
-            largeImageURL,
-            tags,
-            likes,
-            views,
-            comments,
-            downloads,
-        }) =>
-            `<li class="gallery-item">
-            <a href = "${largeImageURL}">
-        <img src="${webformatURL}" alt="${tags}"/>
-    <ul class="gallery-info">
-        <li>Likes<p>${likes}</p></li>
-        <li>Views<p>${views}</p></li>
-        <li>Comments<p>${comments}</p></li>
-        <li>Downloads<p>${downloads}</p></li>
-    </ul>
-    </a>
-    </li>`
-        
-    ).join('');
-
-    photoGallery.insertAdjacentHTML('beforeend', cardMarkup);
-
-  const optionsGallery = {
-    captionsData: 'alt',
-    captionDelay: 250,
-  };
-
-  let gallery = new SimpleLightbox('.gallery a', optionsGallery);
-  gallery.refresh();
+export function createGallery(images) {
+  return images
+    .map(
+      ({ tags, likes, views, comments, downloads, largeImageURL }) =>
+        `<li class="gallery-item">
+          <a class="gallery-link" href="${largeImageURL}">
+            <img class="gallery-img" src="${largeImageURL}" alt="${tags}">
+            <div class="info-gallery-box">
+              <ul class="info-gallery-list">
+                <li class="info-gallery-item">
+                  <p class="info-gallery-text">Likes</p>
+                  <span class="info-gallery-span">${likes}</span>
+                </li>
+                <li class="info-gallery-item">
+                  <p class="info-gallery-text">Views</p>
+                  <span class="info-gallery-span">${views}</span>
+                </li>
+                <li class="info-gallery-item">
+                  <p class="info-gallery-text">Comments</p>
+                  <span class="info-gallery-span">${comments}</span>
+                </li>
+                <li class="info-gallery-item">
+                  <p class="info-gallery-text">Downloads</p>
+                  <span class="info-gallery-span">${downloads}</span>
+                </li>
+              </ul>
+            </div>
+          </a>
+        </li>`
+    )
+    .join('');
 }
